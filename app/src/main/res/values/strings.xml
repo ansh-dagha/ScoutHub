@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Scout Hub</string>
+    <string name="add_button_desc">Add profile</string>
+    <string name="search_username">Search Username</string>
+</resources>

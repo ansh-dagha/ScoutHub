@@ -6,12 +6,17 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import com.bumptech.glide.Glide
+import com.example.scouthub.database.AppDatabase
 import com.example.scouthub.databinding.ActivitySearchBinding
 import com.example.scouthub.networking.GitHubRepository
 import com.example.scouthub.networking.RetrofitClient
 import com.example.scouthub.viewmodel.GitHubViewModel
 import com.example.scouthub.viewmodel.GitHubViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
 
@@ -24,6 +29,15 @@ class SearchActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        val apiService = RetrofitClient.apiService
+        val appDatabase =
+            Room.databaseBuilder(applicationContext, AppDatabase::class.java, "user-database")
+                .build()
+        val userDao = appDatabase.userDao()
+        val repository = GitHubRepository(apiService, userDao)
+        viewModel =
+            ViewModelProvider(this, GitHubViewModelFactory(repository))[GitHubViewModel::class.java]
+
         binding.etSearchUsername.requestFocus()
 
         binding.etSearchUsername.setOnEditorActionListener { v, actionId, event ->
@@ -33,30 +47,30 @@ class SearchActivity : AppCompatActivity() {
                         getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0)
                     val username = binding.etSearchUsername.text.toString().trim()
+                    binding.userSearchResultContainer.isVisible = false
+                    binding.progressLoader.isVisible = true
                     viewModel.getUser(username)
                     true
                 }
-
                 else -> false
             }
         }
 
-        val apiService = RetrofitClient.apiService
-        val repository = GitHubRepository(apiService)
-        viewModel = ViewModelProvider(
-            this,
-            GitHubViewModelFactory(repository)
-        )[GitHubViewModel::class.java]
-
-        // Observe changes in the user data
         viewModel.user.observe(this) { user ->
-            binding.userSearchResultContainer.isVisible = true
-            binding.tvSearchUsername.text = user?.name ?: "N/A"
-            user.avatarUrl?.let {
-                Glide.with(this)
-                    .load(it)
-                    .into(binding.searchProfileImage)
+            viewModel.viewModelScope.launch(Dispatchers.Main) {
+                binding.progressLoader.isVisible = false
+                binding.userSearchResultContainer.isVisible = true
+                binding.tvSearchUsername.text = user?.name ?: "N/A"
+                user?.avatarUrl?.let {
+                    Glide.with(this@SearchActivity)
+                        .load(it)
+                        .into(binding.searchProfileImage)
+                }
             }
+        }
+
+        binding.saveProfile.setOnClickListener {
+            viewModel.insertUserIntoDatabase()
         }
     }
 }

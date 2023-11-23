@@ -1,5 +1,6 @@
 package com.example.scouthub
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
@@ -71,6 +72,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.saveProfile.setOnClickListener {
             viewModel.insertUserIntoDatabase()
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 }

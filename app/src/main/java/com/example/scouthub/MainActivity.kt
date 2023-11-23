@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.example.scouthub.database.AppDatabase
 import com.example.scouthub.databinding.ActivityMainBinding
@@ -12,11 +13,11 @@ import com.example.scouthub.networking.RetrofitClient
 import com.example.scouthub.viewmodel.GitHubViewModel
 import com.example.scouthub.viewmodel.GitHubViewModelFactory
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: GitHubViewModel
+    private lateinit var userAdapter: UserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,5 +39,17 @@ class MainActivity : AppCompatActivity() {
         val repository = GitHubRepository(apiService, userDao)
         viewModel =
             ViewModelProvider(this, GitHubViewModelFactory(repository))[GitHubViewModel::class.java]
+
+        userAdapter = UserAdapter()
+
+        viewModel.allUsers.observe(this) { userList ->
+            // Update the RecyclerView when the user list changes
+            userAdapter.submitList(userList)
+        }
+
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = userAdapter
+        }
     }
 }

@@ -17,4 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="@string/add_button_desc"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        tools:listitem="@layout/item_user"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

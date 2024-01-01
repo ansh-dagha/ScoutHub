@@ -1,4 +1,5 @@
 package com.example.scouthub.database
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

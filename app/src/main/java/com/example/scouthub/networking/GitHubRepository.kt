@@ -1,6 +1,7 @@
 package com.example.scouthub.networking
 
 import androidx.lifecycle.LiveData
+import com.example.scouthub.data.Repo
 import com.example.scouthub.service.GitHubApiService
 import com.example.scouthub.data.User
 import com.example.scouthub.database.UserDao
@@ -13,6 +14,19 @@ class GitHubRepository(private val apiService: GitHubApiService, private val use
     suspend fun getUser(username: String): User? {
         return try {
             val response = apiService.getUser(username)
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun getRepos(username: String): List<Repo>? {
+        return try {
+            val response = apiService.getRepos(username)
             if (response.isSuccessful) {
                 response.body()
             } else {
@@ -59,5 +73,9 @@ class GitHubRepository(private val apiService: GitHubApiService, private val use
             updatedAt = user.updatedAt
         )
         userDao.insertUser(userEntity)
+    }
+
+    suspend fun deleteUser(userEntity: UserEntity) {
+        userDao.deleteUser(userEntity)
     }
 }

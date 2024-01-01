@@ -40,10 +40,18 @@ class MainActivity : AppCompatActivity() {
         viewModel =
             ViewModelProvider(this, GitHubViewModelFactory(repository))[GitHubViewModel::class.java]
 
-        userAdapter = UserAdapter()
+        userAdapter = UserAdapter (
+            onItemClick = { userEntity ->
+                val intent = Intent(this@MainActivity, UserDetailsActivity::class.java)
+                intent.putExtra("username", userEntity.login)
+                startActivity(intent)
+            },
+            onDeleteClickListener = { userEntity ->
+                viewModel.deleteUser(userEntity)
+            }
+        )
 
         viewModel.allUsers.observe(this) { userList ->
-            // Update the RecyclerView when the user list changes
             userAdapter.submitList(userList)
         }
 

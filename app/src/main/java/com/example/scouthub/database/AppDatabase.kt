@@ -1,6 +1,5 @@
 package com.example.scouthub.database
 
-// AppDatabase.kt
 import androidx.room.Database
 import androidx.room.RoomDatabase
 

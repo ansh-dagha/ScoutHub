@@ -3,4 +3,11 @@
     <string name="add_button_desc">Add profile</string>
     <string name="search_username">Search Username</string>
     <string name="save">Save</string>
+    <string name="delete_user">Delete User</string>
+    <string name="username">Username</string>
+    <string name="name">Name</string>
+    <string name="user_avatar">User Avatar</string>
+    <string name="repo_name">Repo Name</string>
+    <string name="repository_description">Repository Description</string>
+    <string name="repositories">Repositories</string>
 </resources>

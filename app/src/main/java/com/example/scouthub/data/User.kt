@@ -1,4 +1,5 @@
 package com.example.scouthub.data
+
 import com.google.gson.annotations.SerializedName
 
 data class User(

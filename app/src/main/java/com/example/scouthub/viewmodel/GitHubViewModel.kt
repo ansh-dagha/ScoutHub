@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 class GitHubViewModel(private val repository: GitHubRepository) : ViewModel() {
 
     private var currentUser: User? = null
-
     val allUsers: LiveData<List<UserEntity>> = repository.allUsers
 
     private val _user = MutableLiveData<User>()
@@ -29,8 +28,6 @@ class GitHubViewModel(private val repository: GitHubRepository) : ViewModel() {
     fun getUser(username: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val user = repository.getUser(username)
-
-            // Switch to the main thread to update LiveData
             withContext(Dispatchers.Main) {
                 if (user != null) {
                     setCurrentUser(user)
@@ -44,6 +41,12 @@ class GitHubViewModel(private val repository: GitHubRepository) : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 repository.insertUser(user)
             }
+        }
+    }
+
+    fun deleteUser(userEntity: UserEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteUser(userEntity)
         }
     }
 }

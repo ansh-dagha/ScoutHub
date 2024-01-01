@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.example.scouthub.database.UserEntity
 import com.example.scouthub.databinding.ItemUserBinding
 
-class UserAdapter : ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserDiffCallback()) {
+class UserAdapter(private val onDeleteClickListener: (UserEntity) -> Unit, private val onItemClick: (UserEntity) -> Unit) : ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding =
@@ -22,15 +22,24 @@ class UserAdapter : ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserDiff
         holder.bind(userEntity)
     }
 
-    class UserViewHolder(private val binding: ItemUserBinding) :
+    inner class UserViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(userEntity: UserEntity) {
-            binding.tvUsername.text = userEntity.login
-            // Add other UI updates based on your UserEntity model
+            binding.tvName.text = userEntity.name
+            binding.tvUsername.text = "#" + userEntity.login
+
             Glide.with(binding.root.context)
                 .load(userEntity.avatarUrl)
                 .into(binding.ivAvatar)
+
+            binding.btnDelete.setOnClickListener {
+                onDeleteClickListener.invoke(userEntity)
+            }
+
+            binding.root.setOnClickListener {
+                onItemClick.invoke(userEntity)
+            }
         }
     }
 
